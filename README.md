@@ -36,3 +36,7 @@
 - UMAP
 - Prince (ACP)
 - Quarto
+
+## Enlace al documento
+
+https://dojzao.github.io/Reduccion-Dimension/
