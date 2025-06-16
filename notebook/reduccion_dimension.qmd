@@ -4,6 +4,10 @@ author: "Diego Jiménez Alvarado"
 format: 
   dashboard:
     embed-resources: true
+    nav-buttons:
+      - icon: github
+        href: https://github.com/dojzao/Reduccion-Dimension
+        aria-label: GitHub
 ---
 
 # Introducción
@@ -18,8 +22,7 @@ format:
 import os
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from math import pi
 from prince import PCA
 from umap.umap_ import UMAP
@@ -38,7 +41,7 @@ from sklearn.preprocessing import StandardScaler
 ```{python}
 #| echo: true
 
-datos = pd.read_csv('data/gimnasio.csv', delimiter = ';', decimal = ".")
+datos = pd.read_csv('../data/gimnasio.csv', delimiter = ';', decimal = ".")
 pred  = datos["Experiencia"]
 datos = datos.drop(['Experiencia'], axis=1)
 datos = pd.get_dummies(datos)
@@ -89,18 +92,22 @@ individuos
 x = individuos.iloc[:, 0]
 y = individuos.iloc[:, 1]
 
-fig, ax = plt.subplots(figsize = (10, 6))
+fig = go.Figure()
 
 for cat in pred.unique():
-  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+  no_plot = fig.add_trace(
+    go.Scatter(x = x[pred == cat], y = y[pred == cat], mode = 'markers', name = cat)
+  )
 
-no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.set_xlabel('Componente 1')
-no_print  = ax.set_ylabel('Componente 2')
-
-no_print = plt.legend()
-plt.show()
+fig.update_layout(
+  xaxis_title = "Componente 1",
+  yaxis_title = "Componente 2",
+  legend_title = "Experiencia",
+  legend = dict(
+    yanchor = "top", y = 0.99,
+    xanchor = "left", x = 0.01
+  )
+)
 ```
 
 :::
@@ -134,18 +141,22 @@ individuos
 x = individuos.iloc[:, 0]
 y = individuos.iloc[:, 1]
 
-fig, ax = plt.subplots(figsize = (10, 6))
+fig = go.Figure()
 
 for cat in pred.unique():
-  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+  no_plot = fig.add_trace(
+    go.Scatter(x = x[pred == cat], y = y[pred == cat], mode = 'markers', name = cat)
+  )
 
-no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.set_xlabel('Componente 1')
-no_print  = ax.set_ylabel('Componente 2')
-
-no_print = plt.legend()
-plt.show()
+fig.update_layout(
+  xaxis_title = "Componente 1",
+  yaxis_title = "Componente 2",
+  legend_title = "Experiencia",
+  legend = dict(
+    yanchor = "top", y = 0.99,
+    xanchor = "left", x = 0.01
+  )
+)
 ```
 
 :::
@@ -181,18 +192,22 @@ individuos
 x = individuos.iloc[:, 0]
 y = individuos.iloc[:, 1]
 
-fig, ax = plt.subplots(figsize = (10, 6))
+fig = go.Figure()
 
 for cat in pred.unique():
-  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+  no_plot = fig.add_trace(
+    go.Scatter(x = x[pred == cat], y = y[pred == cat], mode = 'markers', name = cat)
+  )
 
-no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
-no_print  = ax.set_xlabel('Componente 1')
-no_print  = ax.set_ylabel('Componente 2')
-
-no_print = plt.legend()
-plt.show()
+fig.update_layout(
+  xaxis_title = "Componente 1",
+  yaxis_title = "Componente 2",
+  legend_title = "Experiencia",
+  legend = dict(
+    yanchor = "top", y = 0.99,
+    xanchor = "left", x = 0.01
+  )
+)
 ```
 
 :::
