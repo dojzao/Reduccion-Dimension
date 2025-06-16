@@ -1,0 +1,198 @@
+---
+title: "Reducción de la Dimensión"
+author: "Diego Jiménez Alvarado"
+format: 
+  dashboard:
+    embed-resources: true
+---
+
+# Introducción
+
+## Row
+
+::: {.card title="Cargar paquetes"}
+
+```{python}
+#| echo: true
+
+import os
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from math import pi
+from prince import PCA
+from umap.umap_ import UMAP
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
+```
+
+:::
+
+# Datos {scrolling="true"}
+
+## Row {.tabset}
+
+::: {.card title="Carga de datos"}
+
+```{python}
+#| echo: true
+
+datos = pd.read_csv('data/gimnasio.csv', delimiter = ';', decimal = ".")
+pred  = datos["Experiencia"]
+datos = datos.drop(['Experiencia'], axis=1)
+datos = pd.get_dummies(datos)
+datos.dtypes
+```
+
+:::
+
+::: {.card title="Estandarizar datos"}
+
+```{python}
+#| echo: true
+
+escalar = StandardScaler()
+datos_escalados = escalar.fit_transform(datos)
+datos_escalados = pd.DataFrame(datos_escalados)
+datos_escalados.columns = datos.columns
+datos_escalados.index = datos.index
+datos_escalados
+```
+
+:::
+
+# ACP {scrolling="true"}
+
+## Row {.tabset}
+
+::: {.card title="Modelo"}
+
+**n_components:** Especifica el número de componentes principales que se desean conservar.
+
+```{python}
+#| echo: true
+
+pca = PCA(n_components = 5)
+pca.fit(datos_escalados)
+individuos = pca.row_coordinates(datos_escalados)
+individuos
+```
+
+:::
+
+::: {.card title="Plano Principal"}
+
+```{python}
+#| echo: true
+
+x = individuos.iloc[:, 0]
+y = individuos.iloc[:, 1]
+
+fig, ax = plt.subplots(figsize = (10, 6))
+
+for cat in pred.unique():
+  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+
+no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.set_xlabel('Componente 1')
+no_print  = ax.set_ylabel('Componente 2')
+
+no_print = plt.legend()
+plt.show()
+```
+
+:::
+
+# UMAP {scrolling="true"}
+
+## Row {.tabset}
+
+::: {.card title="Modelado"}
+
+**n_components:** Indica la cantidad de componentes que vamos a generar.
+
+**n_neighbors:** Este parámetro controla como UMAP equilibra la estructura local versus global en los datos. Lo hace restringiendo el tamaño del vecindario local. Se recomienda utilizar una cantidad de $\frac{n}{k}$ donde $n$ es la canitdad total de datos y $k$ la cantidad de clusters a formar.
+
+```{python}
+#| echo: true
+
+umap = UMAP(n_components = 2, n_neighbors = 325)
+individuos = umap.fit_transform(datos_escalados)
+individuos = pd.DataFrame(individuos, index=datos_escalados.index)
+individuos
+```
+
+:::
+
+::: {.card title="Plano Principal"}
+
+```{python}
+#| echo: true
+
+x = individuos.iloc[:, 0]
+y = individuos.iloc[:, 1]
+
+fig, ax = plt.subplots(figsize = (10, 6))
+
+for cat in pred.unique():
+  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+
+no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.set_xlabel('Componente 1')
+no_print  = ax.set_ylabel('Componente 2')
+
+no_print = plt.legend()
+plt.show()
+```
+
+:::
+
+# TSNE {scrolling="true"}
+
+## Row {.tabset}
+
+::: {.card title="Modelado"}
+
+**n_components:** cantidad de componentes a generar.
+
+**perplexity:** La perplejidad está relacionada con el número de vecinos más cercanos que se utiliza en otros múltiples algoritmos de aprendizaje. Los conjuntos de datos más grandes suelen requerir una mayor perplejidad. Considere seleccionar un valor entre 5 y 50. Valores diferentes pueden generar resultados significativamente diferentes. La perplejidad debe ser menor que el número de muestras.
+
+**learning_rate:** La tasa de aprendizaje de t-SNE suele estar en el rango [10,0, 1000,0], es preferible dejarla en automatica.
+
+```{python}
+#| echo: true
+
+tsne = TSNE(n_components=2, perplexity=10, learning_rate='auto', init='random')
+individuos = tsne.fit_transform(datos_escalados)
+individuos = pd.DataFrame(individuos, index=datos_escalados.index)
+individuos
+```
+
+:::
+
+::: {.card title="Plano Principal"}
+
+```{python}
+#| echo: true
+
+x = individuos.iloc[:, 0]
+y = individuos.iloc[:, 1]
+
+fig, ax = plt.subplots(figsize = (10, 6))
+
+for cat in pred.unique():
+  no_print = ax.scatter(x[pred == cat], y[pred == cat], label = cat)
+
+no_print  = ax.axhline(y = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.axvline(x = 0, color = 'dimgrey', linestyle = '--')
+no_print  = ax.set_xlabel('Componente 1')
+no_print  = ax.set_ylabel('Componente 2')
+
+no_print = plt.legend()
+plt.show()
+```
+
+:::
